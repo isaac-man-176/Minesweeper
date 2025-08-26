@@ -19,11 +19,29 @@ clock = pygame.time.Clock()
 
 board = pygame.Rect(boardPadding,boardPadding,(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight)
 
+grid = []
+
+class Tile:
+    def __init__(self,xPos,yPos,tileSize):
+        self.rect = pygame.Rect(xPos,yPos,tileSize,tileSize)
+
+    def draw(self):
+        pygame.draw.rect(screen, "black", self.rect)
+
+for y in range(numOfTilesVert):
+    for x in range(numOfTilesHoriz):
+        newTile1 = Tile(boardPadding+tilePadding+(tileSize+tilePadding)*(x),boardPadding+headerHeight+headerPadding*2+tilePadding+(tileSize+tilePadding)*(y),tileSize)
+        grid.append(newTile1)
+        print("x coord "+str(x)+" y coord "+str(y))
+
 
 while True:
     # graphics
     screen.fill("black")
     pygame.draw.rect(screen, "darkgrey",board)
+
+    for tile in grid:
+        tile.draw()
 
     # updates 
     for event in pygame.event.get():
