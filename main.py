@@ -1,5 +1,5 @@
 import pygame
-
+from tile import Tile
 pygame.init()
 
 # Spacing
@@ -34,22 +34,16 @@ clock = pygame.time.Clock()
 
 board = pygame.Rect(boardPadding,boardPadding,(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight)
 
-class Tile:
-    def __init__(self,x,y,size):
-        self.xPos = x
-        self.yPos = y
-        self.tileSize = size
-        self.rect = pygame.Rect(x,y,size,size)
+# function to find which tile the mouse is on
+def findTile():
+    mousePosition = pygame.mouse.get_pos()
+    for row in grid:
+        for tile in row:
+            if tile.rect.collidepoint(mousePosition):
+                return tile
+    return None
 
-    def draw(self):
-        pygame.draw.rect(screen, DARKGREY, self.rect)
-
-    def drawFlag(self):
-        pygame.draw.polygon(screen,RED, [
-            (self.xPos+self.tileSize/4,self.yPos+self.tileSize/6),      # top point
-            (self.xPos+self.tileSize/4,self.yPos+self.tileSize/2),      # bottom point
-            (self.xPos+self.tileSize*0.75,self.yPos+self.tileSize/3)])  # right point
-        pygame.draw.rect(screen,BLACK,[(self.xPos+self.tileSize/4),(self.yPos+self.tileSize/6),(tileSize/8),(tileSize/1.5)])
+    
 
 # creating instances of tiles 
 grid = []
@@ -76,8 +70,7 @@ while True:
     # drawing each instance of tile
     for row in grid:
         for tile in row:
-            tile.draw()
-            tile.drawFlag()
+            tile.draw(screen)
 
 # updates 
     for event in pygame.event.get():
@@ -85,10 +78,12 @@ while True:
             pygame.quit()
             raise SystemExit
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            numOfClicks += 1
-            print("Times Clicked:" + str(numOfClicks))
+            if findTile():
+                if event.button == 1: # left click
+                    print("clicked")
+                if event.button == 3: # right click
+                    findTile().drawFlag()
         
     # refresh frame
     pygame.display.flip()
     clock.tick(60)
-
