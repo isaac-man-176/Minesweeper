@@ -22,4 +22,7 @@ class Tile:
             pygame.draw.rect(screen,BLACK,[(self.xPos+self.tileSize/4),(self.yPos+self.tileSize/6),(self.tileSize/8),(self.tileSize/1.5)])
 
     def drawFlag(self):
-        self.flagVis = True
+        if self.flagVis == False:
+            self.flagVis = True
+        elif self.flagVis == True:
+            self.flagVis = False
