@@ -26,64 +26,74 @@ WHITE =             (255,255,255)
 
 RED = (255,0,0)
 
-# Game Variables
-numOfClicks = 0
+class Main:
 
-screen = pygame.display.set_mode((boardPadding*2+(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,boardPadding*2+(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight))
-clock = pygame.time.Clock()
-
-board = pygame.Rect(boardPadding,boardPadding,(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight)
-
-# function to find which tile the mouse is on
-def findTile():
-    mousePosition = pygame.mouse.get_pos()
-    for row in grid:
-        for tile in row:
-            if tile.rect.collidepoint(mousePosition):
-                return tile
-    return None
+    # Game Variables
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((boardPadding*2+(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,boardPadding*2+(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight))
 
     
+    def __init__(self):
+        self.grid = []
+        self.setup()
 
-# creating instances of tiles 
-grid = []
-for y in range(numOfTilesVert):
-    line = []
-    for x in range(numOfTilesHoriz):
-        newTile1 = Tile(boardPadding+tilePadding+(tileSize+tilePadding)*(x),boardPadding+headerHeight+headerPadding*2+tilePadding+(tileSize+tilePadding)*(y),tileSize)
-        line.append(newTile1)
-    grid.append(line)
+    def setup(self):
+    # creating instances of tiles 
+        for y in range(numOfTilesVert):
+            line = []
+            for x in range(numOfTilesHoriz):
+                newTile1 = Tile(boardPadding+tilePadding+(tileSize+tilePadding)*(x),boardPadding+headerHeight+headerPadding*2+tilePadding+(tileSize+tilePadding)*(y),tileSize)
+                line.append(newTile1)
+            self.grid.append(line)
 
-while True:
-# graphics
+    def restart(self):
+        self.grid = []
+        self.setup()
 
-    # board and background
-    screen.fill(BLACK)
-    pygame.draw.rect(screen, LIGHTLIGHTGREY,board)
+    def run(self):
+        while True:
+            # graphics
 
-    # restart button graphics
-    restartButton = pygame.Rect(boardPadding+(tileSize+tilePadding)*numOfTilesHoriz/2+ tilePadding/2 - restartButtonSize/2, boardPadding+headerPadding,restartButtonSize,restartButtonSize)
-    pygame.draw.rect(screen,LIGHTGREY, restartButton,restartButtonSize)
-    restartButtonBorder = pygame.Rect(boardPadding+(tileSize+tilePadding)*numOfTilesHoriz/2+ tilePadding/2 - restartButtonSize/2, boardPadding+headerPadding,restartButtonSize,restartButtonSize)
-    pygame.draw.rect(screen, DARKGREY, restartButtonBorder, borderThickness)
+            # board and background
+            self.screen.fill(BLACK)
+            board = pygame.Rect(boardPadding,boardPadding,(tileSize+tilePadding)*numOfTilesHoriz+tilePadding,(tileSize+tilePadding)*numOfTilesVert+tilePadding+headerPadding*2+headerHeight)
+            pygame.draw.rect(self.screen, LIGHTLIGHTGREY,board)
+
+            # restart button graphics
+            restartButton = pygame.Rect(boardPadding+(tileSize+tilePadding)*numOfTilesHoriz/2+ tilePadding/2 - restartButtonSize/2, boardPadding+headerPadding,restartButtonSize,restartButtonSize)
+            pygame.draw.rect(self.screen,LIGHTGREY, restartButton,restartButtonSize)
+            restartButtonBorder = pygame.Rect(boardPadding+(tileSize+tilePadding)*numOfTilesHoriz/2+ tilePadding/2 - restartButtonSize/2, boardPadding+headerPadding,restartButtonSize,restartButtonSize)
+            pygame.draw.rect(self.screen, DARKGREY, restartButtonBorder, borderThickness)
     
-    # drawing each instance of tile
-    for row in grid:
-        for tile in row:
-            tile.draw(screen)
+            # drawing each instance of tile
+            for row in self.grid:
+                for tile in row:
+                    tile.draw(self.screen)
 
-# updates 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            raise SystemExit
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if findTile():
-                if event.button == 1: # left click
-                    print("clicked")
-                if event.button == 3: # right click
-                    findTile().drawFlag()
+            # updates 
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    raise SystemExit
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                
+                    # clicking on restart button
+                    if event.button == 1: # left click
+                        if restartButton.collidepoint(pygame.mouse.get_pos()):
+                            print("restarted")
+                            self.restart()
+
+                    # clicking on a tile
+                    clickedTile = Tile.findTile(self.grid)
+                    if clickedTile:
+                        if event.button == 1: # left click
+                            print("left click")
+                        if event.button == 3: # right click
+                            clickedTile.drawFlag()
         
-    # refresh frame
-    pygame.display.flip()
-    clock.tick(60)
+            # refresh frame
+            pygame.display.flip()
+            self.clock.tick(60)         
+
+game = Main()
+game.run()
